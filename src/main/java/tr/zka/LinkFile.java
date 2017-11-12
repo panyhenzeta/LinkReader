@@ -3,10 +3,10 @@ package tr.zka;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -15,7 +15,7 @@ public class LinkFile {
     private String fileContent;
     private List<LinkContent> linkContentList;
     private final String URL_REGEX = "((https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])";
-    private final String MESSAGE_DIGEST = "MD5";
+
 
     public LinkFile() {
         linkContentList = new ArrayList<>();
@@ -70,34 +70,19 @@ public class LinkFile {
     }
 
     public void fetchLinksData() {
-        LinkService service = new LinkService();
         String content;
+        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
         for (LinkContent linkContent : linkContentList) {
             try {
-                content = service.sendGet(linkContent.getLink());
-                linkContent.setContent(content);
-                linkContent.setMd5Checksum(computeMd5Checksum(content));
+                executorService.execute(new LinkService(linkContent));
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
     }
 
-
-    public String computeMd5Checksum(String content) {
-        String checksum = null;
-        try {
-            MessageDigest md = MessageDigest.getInstance(MESSAGE_DIGEST);
-            md.update(content.getBytes());
-            checksum = new sun.misc.BASE64Encoder().encode(md.digest());
-
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println(checksum);
-        return checksum;
-    }
 
     public String getFileContent() {
         return fileContent;
