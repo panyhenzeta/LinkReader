@@ -6,17 +6,19 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class LinkService implements Runnable{
+public class LinkService implements Runnable {
     private LinkContent linkContent;
 
     private final int BUFFER_SIZE = 10000;
     private final String MESSAGE_DIGEST = "MD5";
+    private final int MAX_ATTEMPT = 2;
 
-    public LinkService(LinkContent linkContent){
+    public LinkService(LinkContent linkContent) {
         this.linkContent = linkContent;
     }
 
@@ -24,33 +26,42 @@ public class LinkService implements Runnable{
     public void run() {
         try {
             sendGet();
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void sendGet() throws Exception {
-        String url = linkContent.getLink();
-        HttpClient client = new DefaultHttpClient();
-        HttpGet request = new HttpGet(url);
+    public void sendGet() throws IOException {
+        int count = 0;
+        while (true){
+            try {
+                String url = linkContent.getLink();
+                HttpClient client = new DefaultHttpClient();
+                HttpGet request = new HttpGet(url);
 
-        HttpResponse response = client.execute(request);
-        InputStream is = response.getEntity().getContent();
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                HttpResponse response = client.execute(request);
+                InputStream is = response.getEntity().getContent();
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-        int nRead;
-        byte[] data = new byte[BUFFER_SIZE];
-        while ((nRead = is.read(data, 0, data.length)) != -1) {
-            buffer.write(data, 0, nRead);
+                int nRead;
+                byte[] data = new byte[BUFFER_SIZE];
+                while ((nRead = is.read(data, 0, data.length)) != -1) {
+                    buffer.write(data, 0, nRead);
+                }
+                buffer.flush();
+                buffer.toByteArray();
+
+                System.out.println(url + " " + count);
+                setLinkContent(buffer.toString());
+                break;
+            } catch (IOException e) {
+                if (++count == MAX_ATTEMPT)
+                    throw e;
+            }
         }
-        buffer.flush();
-        buffer.toByteArray();
-
-        System.out.println(url);
-        setLinkContent(buffer.toString());
     }
 
-    private void setLinkContent(String content){
+    private void setLinkContent(String content) {
         linkContent.setContent(content);
         linkContent.setMd5Checksum(computeMd5Checksum(content));
     }
@@ -65,8 +76,6 @@ public class LinkService implements Runnable{
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-
-        System.out.println(checksum);
         return checksum;
     }
 

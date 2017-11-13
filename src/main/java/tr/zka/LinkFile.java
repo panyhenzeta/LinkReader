@@ -76,7 +76,6 @@ public class LinkFile {
         for (LinkContent linkContent : linkContentList) {
             try {
                 executorService.execute(new LinkService(linkContent));
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
