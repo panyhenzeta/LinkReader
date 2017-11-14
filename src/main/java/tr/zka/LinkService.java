@@ -3,7 +3,7 @@ package tr.zka;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,7 +29,7 @@ public class LinkService implements Callable<String> {
         int count = 0;
         while (true) {
             try {
-                HttpClient client = new DefaultHttpClient();
+                HttpClient client = HttpClientBuilder.create().build();
                 HttpGet request = new HttpGet(url);
 
                 HttpResponse response = client.execute(request);
