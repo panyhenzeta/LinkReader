@@ -8,34 +8,27 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.Callable;
 
-public class LinkService implements Runnable {
-    private LinkContent linkContent;
-
+public class LinkService implements Callable<String> {
+    private String url;
     private final int BUFFER_SIZE = 10000;
-    private final String MESSAGE_DIGEST = "MD5";
     private final int MAX_ATTEMPT = 2;
 
-    public LinkService(LinkContent linkContent) {
-        this.linkContent = linkContent;
+    public LinkService(String url){
+        this.url = url;
     }
 
     @Override
-    public void run() {
-        try {
-            sendGet();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public String call() throws Exception {
+        String content = sendGet();
+        return content;
     }
 
-    public void sendGet() throws IOException {
+    private String sendGet() throws IOException {
         int count = 0;
-        while (true){
+        while (true) {
             try {
-                String url = linkContent.getLink();
                 HttpClient client = new DefaultHttpClient();
                 HttpGet request = new HttpGet(url);
 
@@ -51,33 +44,11 @@ public class LinkService implements Runnable {
                 buffer.flush();
                 buffer.toByteArray();
 
-                System.out.println(url + " " + count);
-                setLinkContent(buffer.toString());
-                break;
+                return buffer.toString();
             } catch (IOException e) {
                 if (++count == MAX_ATTEMPT)
                     throw e;
             }
         }
     }
-
-    private void setLinkContent(String content) {
-        linkContent.setContent(content);
-        linkContent.setMd5Checksum(computeMd5Checksum(content));
-    }
-
-    public String computeMd5Checksum(String content) {
-        String checksum = null;
-        try {
-            MessageDigest md = MessageDigest.getInstance(MESSAGE_DIGEST);
-            md.update(content.getBytes());
-            checksum = new sun.misc.BASE64Encoder().encode(md.digest());
-
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return checksum;
-    }
-
-
 }
