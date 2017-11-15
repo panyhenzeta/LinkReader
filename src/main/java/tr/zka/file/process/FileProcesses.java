@@ -1,22 +1,31 @@
 package tr.zka.file.process;
 
+import tr.zka.model.LinkContent;
 import tr.zka.model.LinkFile;
+import tr.zka.validator.impl.LinkValidator;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+import java.util.function.Predicate;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FileProcesses {
     private static LinkFile linkFile;
-    public static final String ANSI_RED = "\u001B[31m";
+
+    private final String URL_REGEX = "((https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])";
+    private final String ANSI_RED = "\u001B[31m";
 
     public FileProcesses() {
         linkFile = new LinkFile();
     }
 
-    public void getFilePathFromUser() {
+    public void getFilePathFromUser() throws FileNotFoundException {
         Scanner sc = new Scanner(System.in);
         System.out.print("Please enter file path: ");
         String filePath = sc.nextLine();
@@ -25,7 +34,7 @@ public class FileProcesses {
         readFile(filePath);
     }
 
-    private void readFile(String filePath)  {
+    private void readFile(String filePath) throws FileNotFoundException {
         try (FileReader fr = new FileReader(filePath)) {
             BufferedReader br = new BufferedReader(fr);
 
@@ -37,9 +46,48 @@ public class FileProcesses {
             }
             linkFile.setContent(sb.toString());
         } catch (FileNotFoundException fnf) {
-            System.out.println(ANSI_RED + "There is no file path like " + filePath + ANSI_RED);
+            throw new FileNotFoundException("There is no file path like " + filePath);
         } catch (IOException io) {
             io.printStackTrace();
+        }
+    }
+
+    public void findLinksInFile() {
+        String content = linkFile.getContent();
+        Pattern pattern = Pattern.compile(URL_REGEX, Pattern.CASE_INSENSITIVE);
+        Matcher urlMatcher = pattern.matcher(content);
+
+        List<LinkContent> linkContentList = new ArrayList<>();
+        LinkContent linkContent = null;
+        String url;
+        while (urlMatcher.find()) {
+            url = content.substring(urlMatcher.start(0), urlMatcher.end(0));
+            linkContent = createLinkContentWithLink(url);
+            linkContentList.add(linkContent);
+        }
+        linkFile.setLinkContentList(linkContentList);
+        validateLinksAndRemove();
+    }
+
+    private LinkContent createLinkContentWithLink(String url) {
+        LinkContent linkContent = new LinkContent();
+        linkContent.setLink(url);
+        return linkContent;
+    }
+
+    private void validateLinksAndRemove() {
+        List<LinkContent> linkContents = linkFile.getLinkContentList();
+
+        if (linkContents != null && linkContents.size() > 0) {
+            Predicate<LinkContent> linkPredicate = l -> !new LinkValidator().isValidLink(l.getLink());
+            linkContents.removeIf(linkPredicate);
+        }
+    }
+
+    public void printLinks() {
+        for (LinkContent linkContent : linkFile.getLinkContentList()) {
+            System.out.println(linkContent.getLink());
+            System.out.println(linkContent.getChecksum());
         }
     }
 
