@@ -1,14 +1,14 @@
-package tr.zka.validator;
+package tr.zka.validator.impl;
 
 import org.apache.commons.validator.routines.UrlValidator;
-import tr.zka.validator.url.validators.IHasParameters;
-import tr.zka.validator.url.validators.IHasPort;
-import tr.zka.validator.url.validators.IValidURL;
+import tr.zka.validator.IHasParameters;
+import tr.zka.validator.IHasPort;
+import tr.zka.validator.IValidURL;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class MainValidator implements  IValidURL, IHasPort, IHasParameters{
+public class MainValidator implements IValidURL, IHasPort, IHasParameters {
 
     //Checks if url is valid
     public boolean isValidURI(String link) {

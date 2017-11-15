@@ -1,4 +1,4 @@
-package tr.zka.validator;
+package tr.zka.validator.impl;
 
 public class LinkValidator extends MainValidator {
 

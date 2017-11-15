@@ -1,4 +1,6 @@
-package tr.zka.cheksum;
+package tr.zka.cheksum.impl;
+
+import tr.zka.cheksum.IChecksum;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

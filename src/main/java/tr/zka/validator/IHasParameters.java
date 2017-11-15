@@ -1,4 +1,4 @@
-package tr.zka.validator.url.validators;
+package tr.zka.validator;
 
 public interface IHasParameters {
     boolean hasParameters(String link);

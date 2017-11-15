@@ -1,9 +1,9 @@
 package tr.zka;
 
-import tr.zka.cheksum.Md5Checksum;
+import tr.zka.cheksum.impl.Md5Checksum;
 import tr.zka.model.LinkContent;
 import tr.zka.service.LinkService;
-import tr.zka.validator.LinkValidator;
+import tr.zka.validator.impl.LinkValidator;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -17,13 +17,12 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class LinkFile {
+public class LinkFileHebele {
     private String fileContent;
     private List<LinkContent> linkContentList;
     private final String URL_REGEX = "((https?)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])";
-    private final String MESSAGE_DIGEST = "MD5";
 
-    public LinkFile() {
+    public LinkFileHebele() {
         linkContentList = new ArrayList<>();
     }
 

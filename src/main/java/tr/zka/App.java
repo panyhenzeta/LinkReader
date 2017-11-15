@@ -1,16 +1,21 @@
 package tr.zka;
 
+import tr.zka.file.process.FileProcesses;
+
 public class App {
 
     public static void main(String[] args) {
-        String filePath = "C:\\Users\\zka\\Desktop\\CatCoder\\6 - LinkReader\\README.md";
+        FileProcesses fileProcesses = new FileProcesses();
+        fileProcesses.getFilePathFromUser();
 
-        LinkFile linkFile = new LinkFile();
-        linkFile.readFile(filePath);
-        linkFile.findLinksInFile();
-        linkFile.validateLinksAndRemove();
-        linkFile.fetchLinksData();
-        linkFile.printLinks();
+
+
+/*        LinkFileHebele linkFileHebele = new LinkFileHebele();
+        linkFileHebele.readFile(filePath);
+        linkFileHebele.findLinksInFile();
+        linkFileHebele.validateLinksAndRemove();
+        linkFileHebele.fetchLinksData();
+        linkFileHebele.printLinks();*/
     }
 
 }
