@@ -7,17 +7,15 @@ import java.io.FileNotFoundException;
 public class App {
 
     public static void main(String[] args) throws FileNotFoundException {
+        processFile();
+    }
+
+    private static void processFile() throws FileNotFoundException {
         FileProcesses fileProcesses = new FileProcesses();
         fileProcesses.getFilePathFromUser();
         fileProcesses.findLinksInFile();
+        fileProcesses.fetchLinksData();
 
-
-/*        LinkFileHebele linkFileHebele = new LinkFileHebele();
-        linkFileHebC:\Users\zka\Desktop\CatCoder\6 - LinkReader\README.mdele.readFile(filePath);
-        linkFileHebele.findLinksInFile();
-        linkFileHebele.validateLinksAndRemove();
-        linkFileHebele.fetchLinksData();
-        linkFileHebele.printLinks();*/
+        fileProcesses.printLinks();
     }
-
 }

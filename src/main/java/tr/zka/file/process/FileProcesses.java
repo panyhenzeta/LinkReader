@@ -1,7 +1,9 @@
 package tr.zka.file.process;
 
+import tr.zka.cheksum.impl.Md5Checksum;
 import tr.zka.model.LinkContent;
 import tr.zka.model.LinkFile;
+import tr.zka.service.LinkService;
 import tr.zka.validator.impl.LinkValidator;
 
 import java.io.BufferedReader;
@@ -11,6 +13,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -84,10 +89,32 @@ public class FileProcesses {
         }
     }
 
+    /**
+     * execute thread with available cpu cores
+     */
+    public void fetchLinksData() {
+        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+        Future<String> content;
+        for (LinkContent linkContent : linkFile.getLinkContentList()) {
+            System.out.println("Fetching data from link " + linkContent.getLink());
+            try {
+                content = executorService.submit(new LinkService(linkContent.getLink()));
+                linkContent.setContent(content.get());
+                linkContent.setChecksum(new Md5Checksum().computeCheksum(content.get()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("Fetched datas");
+    }
+
+
     public void printLinks() {
         for (LinkContent linkContent : linkFile.getLinkContentList()) {
-            System.out.println(linkContent.getLink());
-            System.out.println(linkContent.getChecksum());
+            System.out.println("Link: " + linkContent.getLink());
+            System.out.println("Checksum: " + linkContent.getChecksum());
+            System.out.println();
         }
     }
 

@@ -6,7 +6,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.Callable;
 
@@ -25,7 +24,7 @@ public class LinkService implements Callable<String> {
         return content;
     }
 
-    private String sendGet() throws IOException {
+    private String sendGet() throws Exception {
         int count = 0;
         while (true) {
             try {
@@ -45,7 +44,7 @@ public class LinkService implements Callable<String> {
                 buffer.toByteArray();
 
                 return buffer.toString();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 if (++count == MAX_ATTEMPT)
                     throw e;
             }
