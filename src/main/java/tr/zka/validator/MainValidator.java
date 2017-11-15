@@ -1,25 +1,23 @@
-package tr.zka;
+package tr.zka.validator;
 
 import org.apache.commons.validator.routines.UrlValidator;
+import tr.zka.validator.url.validators.IHasParameters;
+import tr.zka.validator.url.validators.IHasPort;
+import tr.zka.validator.url.validators.IValidURL;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class LinkValidator {
+public class MainValidator implements  IValidURL, IHasPort, IHasParameters{
 
-    public static boolean isValidLink(String link) {
-        if (!isValidURI(link) ||
-                (isValidURI(link) && (hasPort(link) || hasParameters(link))))
-            return false;
-        return true;
-    }
-
-    private static boolean isValidURI(String link) {
+    //Checks if url is valid
+    public boolean isValidURI(String link) {
         UrlValidator urlValidator = new UrlValidator();
         return urlValidator.isValid(link);
     }
 
-    private static boolean hasPort(String link) {
+    //Checks url has port
+    public boolean hasPort(String link) {
         boolean hasPort = true;
         try {
             URL url = new URL(link);
@@ -31,7 +29,11 @@ public class LinkValidator {
         return hasPort;
     }
 
-    private static boolean hasParameters(String link) {
+    /** Checks url has parameters
+     * ? -> for query
+     * # -> for fragments
+     **/
+    public boolean hasParameters(String link) {
         if (link.contains("?") || link.contains("#"))
             return true;
         return false;

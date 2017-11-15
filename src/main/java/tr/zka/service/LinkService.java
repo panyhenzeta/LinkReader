@@ -1,4 +1,4 @@
-package tr.zka;
+package tr.zka.service;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;

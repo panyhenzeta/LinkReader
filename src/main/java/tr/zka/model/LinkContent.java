@@ -1,9 +1,17 @@
-package tr.zka;
+package tr.zka.model;
+
+/**
+ * LinkContent is a model for representing url link
+ * which has
+ * url value as link
+ * content
+ * computed checksum
+ * **/
 
 public class LinkContent {
     private String link;
     private String content;
-    private String md5Checksum;
+    private String checksum;
 
     public String getLink() {
         return link;
@@ -21,11 +29,11 @@ public class LinkContent {
         this.content = content;
     }
 
-    public String getMd5Checksum() {
-        return md5Checksum;
+    public String getChecksum() {
+        return checksum;
     }
 
-    public void setMd5Checksum(String md5Checksum) {
-        this.md5Checksum = md5Checksum;
+    public void setChecksum(String checksum) {
+        this.checksum = checksum;
     }
 }
