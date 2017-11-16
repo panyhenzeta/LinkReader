@@ -1,5 +1,5 @@
 **Generated checksums and matched links for part 4 questions**
-------------------
+==================
 
  * ***Link:*** https://tools.ietf.org/rfc/rfc3986.txt
 
@@ -11,8 +11,10 @@
 
 
 **Project**
-------------------
+==================
 
+Folder Description
+------------------
 * /model 
    There are two models:
    * LinkFile -> which is used for file. LinkFile has three fields: path, content and list for links.
@@ -41,8 +43,28 @@
                     - get content of links
                     
                     - print links
+                   
+Pom.xml
+------------------
+###### Plugins
+* maven-javadoc-plugin -> to javadoc options
+* maven-jar-plugin ->  to run project from .jar file
+* maven-dependency-plugin -> to extract dependency to specified location (for .jar file)
+* exec-maven-plugin > to run project 'with mvn exec:java' command
+
+###### Dependencies
+* junit -> for unit tests
+* org.apache.httpcomponents httpclient -> for link requests
                     
-              
+Test
+------------------
+There are two unit test methods under the test folder in AppTest class.
+
+* testChecksum() -> to check md5 checksum computes
+* testLinkValidator() -> to check link validator
+  
+
+
    
                   
 
